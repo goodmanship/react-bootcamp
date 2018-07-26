@@ -48,6 +48,7 @@
         this.handleDeactivateFriend = this.handleDeactivateFriend.bind(this)
         this.handleActivateFriend = this.handleActivateFriend.bind(this)
         this.updateInput = this.updateInput.bind(this)
+        this.handleClearAll = this.handleClearAll.bind(this)
       }
       handleAddFriend(name) {
         this.setState((currentState) => {
@@ -80,6 +81,12 @@
           }
         })
       }
+      handleClearAll() {
+        this.setState({
+          activeFriends: [],
+          inactiveFriends: []
+        })
+      }
       updateInput(e) {
         const value = e.target.value
         this.setState({
@@ -96,6 +103,7 @@
               onChange={this.updateInput}
             />
             <button onClick={this.handleAddFriend}>Submit</button>
+            <button onClick={this.handleClearAll}>Clear All</button>
             <h2>Active Friends</h2>
             <ActiveFriendsList
               list={this.state.activeFriends}
