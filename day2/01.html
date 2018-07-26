@@ -15,21 +15,64 @@
         <ul>
           {props.list.map((name) => (
             <li key={name}>
-              {name}
+              <span>{name}</span>
+              <button onClick={() => props.onRemoveFriend(name)}>-</button>
             </li>
           ))}
         </ul>
       )
     }
 
-    function App() {
-      const friends = ['Aubs', 'Ryla', 'Soso', 'Gigi']
+    class App extends React.Component {
+      constructor(props) {
+        super(props)
+        this.state = {
+          friends: ['Aubs', 'Ryla', 'Soso', 'Gigi'],
+          input: ''
+        }
+        this.handleRemoveFriend = this.handleRemoveFriend.bind(this)
+        this.handleAddFriend = this.handleAddFriend.bind(this)
+        this.updateInput = this.updateInput.bind(this)
+      }
+      handleAddFriend(name) {
+        this.setState((currentState) => {
+          return {
+            friends: currentState.friends.concat([currentState.input]),
+            input: ''
+          }
+        })
+      }
+      handleRemoveFriend(name) {
+        this.setState((currentState) => {
+          return {
+            friends: currentState.friends.filter((friend) => friend !== name)
+          }
+        })
 
-      return (
-        <div>
-          <FriendsList list={friends} />
-        </div>
-      )
+      }
+      updateInput(e) {
+        const value = e.target.value
+        this.setState({
+          input: value
+        })
+      }
+      render() {
+        return (
+          <div>
+            <input
+              type='text'
+              placeholder='new friend'
+              value={this.state.input}
+              onChange={this.updateInput}
+            />
+            <button onClick={this.handleAddFriend}>Submit</button>
+            <FriendsList
+              list={this.state.friends}
+              onRemoveFriend={this.handleRemoveFriend}
+            />
+          </div>
+        )
+      }
     }
 
     ReactDOM.render(
