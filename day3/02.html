@@ -52,20 +52,49 @@
       }
     }
     class Repos extends React.Component {
+      constructor(props) {
+        super(props)
+        this.state = {
+          repos: [],
+          loading: true
+        }
+      }
       componentDidMount() {
-        API.fetchFriends()
-          .then((friends) => {
+        API.fetchPopularRepos(this.props.lang)
+          .then((repos) => {
             this.setState({
-              friends,
+              repos,
               loading: false,
             })
         })
       }
-      componentDidUpdate() {
+      componentDidUpdate(prevProps, prevState) {
+        console.log(prevProps, this.props)
+        if (prevProps.lang === this.props.lang) {
+          return
+        }
+        API.fetchPopularRepos(this.props.lang)
+          .then((repos) => {
+            this.setState({
+              repos,
+              loading: false,
+            })
+        })
       }
       render() {
+        if (this.state.loading === true) {
+          return <Loading />
+        }
         return (
-
+          <ul>
+            {this.state.repos.map((repo) => (
+              <li key={repo.id} style={{display:'inline-block',margin:'10px'}}>
+                <h4>{repo.name}</h4>
+                <p><a target='_blank' href={repo.html_url}><img src={repo.owner.avatar_url} alt='avatar' height='32px' /></a><span> {repo.owner.login}</span></p>
+                <p>forks: {repo.forks} | stars: {repo.stargazers_count} | watchers: {repo.watchers_count}</p>
+              </li>
+            ))}
+          </ul>
         )
       }
     }
@@ -74,18 +103,14 @@
         super(props)
         this.list = ['javascript', 'ruby', 'python', 'all']
         this.state = {
-          lang: null,
-          loading: false
+          lang: null
         }
         this.handleClick = this.handleClick.bind(this)
       }
       handleClick(lang) {
-        console.log(lang)
+        this.setState({ lang })
       }
       render() {
-        if (this.state.loading === true) {
-          return <Loading />
-        }
         return (
           <div>
             <ul>
@@ -97,9 +122,7 @@
                 </li>
               ))}
             </ul>
-          </div>
-          <div>
-            <Repos lang={this.state.lang} />
+            <Repos lang={this.state.lang} loading={this.state.loading} />
           </div>
         )
       }
